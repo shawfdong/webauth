@@ -1991,6 +1991,37 @@ sub index : StartRunmode {
     # Pass the information along to the WebKDC and get the response.
     if (!$status) {
         ($status, $error) = WebKDC::make_request_token_request ($req, $resp);
+
+        # BEGIN SLAC HACK
+        # if password fails try alternate realms.
+        # Add in WK_ERR_UNRECOVERABLE_ERROR since error reporting gets compressed in webauth_krb5_init_via_password.
+        if ( ( $status == WK_ERR_LOGIN_FAILED || $status == WK_ERR_UNRECOVERABLE_ERROR )
+            && @WebKDC::Config::REMUSER_REALMS )
+        {
+            my ( $user, %realmTried );
+            for my $rrealm (@WebKDC::Config::REMUSER_REALMS) {
+                $user = $req->user;
+                my ( $principal, $realm ) = split( '@', $user );
+                if ( defined $realm ) {
+                    $realmTried{$realm} = 1;
+                }
+                else {
+                    # Assume first element of @WebKDC::Config::REMUSER_REALMS is realm of WebKDC.
+                    $realmTried{ $WebKDC::Config::REMUSER_REALMS[0] } = 1;
+                }
+
+                if ( $realmTried{$rrealm} ) {
+                    next;
+                }
+                else {
+                    $user = $principal . '@' . $rrealm;
+                    $req->user($user);
+                    ( $status, $error ) = WebKDC::make_request_token_request( $req, $resp );
+                    last if ( $status == WK_SUCCESS );
+                }
+            }
+        }
+        # END SLAC HACK
     }
 
     # Parse the result from the WebKDC and get the login cancel information if

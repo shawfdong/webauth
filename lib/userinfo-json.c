@@ -28,6 +28,8 @@
 #include <webauth/webkdc.h>
 #include <util/macros.h>
 
+#define UNUSED __attribute__((__unused__))
+
 /*
  * Parsing macros that include error checking.  Each of these macros assume
  * that the s variable is available for a status and that the correct thing to
