@@ -7,14 +7,14 @@ Install the required RPM packages:
 ```
 yum -y groupinstall "Development tools"
 yum -y install wget httpd php openssl mod_ssl \
-       httpd-devel libcurl-devel openssl-devel 
+       httpd-devel libcurl-devel openssl-devel libgcrypt libgcrypt-devel 
 ```
 
 WebAuth depends upon a lot of Perl modules. In general I install the RPM package if a Perl module is available as one; otherwise I use `cpanm` to install the missing Perl modules.
 
 ```
 yum -y install perl-CGI-Application perl-libwww-perl perl-Crypt-SSLeay \
-               perl-Template-Toolkit perl-URI perl-XML-Parser \
+               perl-Template-Toolkit perl-URI perl-XML-Parser perl-LWP-Protocol-https \
                perl-Cache-Memcached perl-FreezeThaw perl-Time-Duration
 
 yum -y install perl-App-cpanminus
@@ -23,6 +23,7 @@ cpanm CGI::Application::Plugin::AutoRunmode
 cpanm CGI::Application::Plugin::Forward
 cpanm CGI::Application::Plugin::Redirect
 cpanm CGI::Application::Plugin::TT
+cpanm Crypt::GCrypt
 ```
 
 ## Build WebKDC and WebAuth
@@ -34,8 +35,53 @@ mkdir -p /opt/src
 cd /opt/src
 git clone https://github.com/shawfdong/webauth.git
 cd webauth
-./configure --prefix=/opt/webauth
+./configure --enable-webkdc
 make
 make check
 make install
+echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf
+ldconfig
 ```
+
+## Install mod_fcgid
+
+Weblogin scripts are Perl FastCGI scripts, so we install `mod_fcgid` to provide FastCGI support (optional):
+
+```
+yum -y install mod_fcgid
+```  
+
+## memcached
+
+This is also optional. But we can use `memcached` to speed up WebKDC. First install memcached:
+
+```
+yum -y install memcached libmemcached
+```
+
+Then modify `/etc/sysconfig/memcached` as follows:
+
+```
+PORT="11211"
+USER="memcached"
+MAXCONN="2048"
+CACHESIZE="4096"
+OPTIONS="-l 127.0.0.1 -U 0"
+```
+
+Note here I disable the UDP port. Then enable and start the memcached service:
+
+```
+systemctl enable memcached
+systemctl start memcached
+```
+
+Add the following lines to WebKDC configuration (`/etc/webkdc/webkdc.conf`):
+
+```
+@MEMCACHED_SERVERS = ('127.0.0.1:11211');
+$REPLAY_TIMEOUT = 300;
+$RATE_LIMIT_THRESHOLD = 5;
+```
+
+
