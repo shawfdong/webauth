@@ -51,7 +51,7 @@ Weblogin scripts are Perl FastCGI scripts, so we install `mod_fcgid` to provide 
 yum -y install mod_fcgid
 ```  
 
-## memcached
+## Install memcached
 
 This is also optional. But we can use `memcached` to speed up WebKDC. First install memcached:
 
@@ -84,4 +84,12 @@ $REPLAY_TIMEOUT = 300;
 $RATE_LIMIT_THRESHOLD = 5;
 ```
 
+## Kerberos Keytabs
 
+A number of Kerberos keytabs are present on webauth701:
+
+* `/etc/krb5.keytab` is the host keytab (`host/webauth701.slac.stanford.edu@SLAC.STANFORD.EDU`);
+* `/etc/webauth/keytab` is the webauth client keytab (`webauth/webauth701.slac.stanford.edu@SLAC.STANFORD.EDU`)
+* `/etc/httpd/conf/webkdc/keytab` is the webkdc keytab (`service/webkdc@SLAC.STANFORD.EDU`)
+* `/etc/httpd/conf/http.keytab` is the HTTP keytab (`HTTP/webauth701.slac.stanford.edu@SLAC.STANFORD.EDU`)
+ 
