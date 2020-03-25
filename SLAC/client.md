@@ -33,7 +33,7 @@ make install
 
 ## Keytab
 
-WebAuth requires a keytab. Below is an example:
+WebAuth requires a *webauth* keytab. Below is an example:
 
 ```
 $ ktutil -k /tmp/webauth702_webauth.keytab list
