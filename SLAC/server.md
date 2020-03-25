@@ -31,8 +31,6 @@ cpanm Crypt::GCrypt
 Here we build both the server components (*WebKDC*) and the client components (*mod_webauth* & *mod_webauthldap*):
 
 ```
-mkdir -p /opt/src
-cd /opt/src
 git clone https://github.com/shawfdong/webauth.git
 cd webauth
 ./configure --enable-webkdc
