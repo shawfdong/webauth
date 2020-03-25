@@ -43,7 +43,7 @@ Vno  Type                     Principal                                         
   1  arcfour-hmac-md5         webauth/webauth702.slac.stanford.edu@SLAC.STANFORD.EDU
 ```
 
-Create the keytab, then copy it to `/etc/webauth`:
+Create such a keytab, then copy it to `/etc/webauth`:
 
 ```
 mkdir /etc/webauth
