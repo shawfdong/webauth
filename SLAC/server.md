@@ -43,6 +43,14 @@ echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf
 ldconfig
 ```
 
+Copy weblogin scripts to `/var/www`:
+
+```
+cp -r /usr/local/share/weblogin /var/www/
+```
+
+and modify them to your heart's delight.
+
 ## Install mod_fcgid
 
 Weblogin scripts are Perl FastCGI scripts, so we install `mod_fcgid` to provide FastCGI support (optional):
@@ -92,4 +100,10 @@ A number of Kerberos keytabs are present on webauth701:
 * `/etc/webauth/keytab` is the webauth client keytab (`webauth/webauth701.slac.stanford.edu@SLAC.STANFORD.EDU`)
 * `/etc/httpd/conf/webkdc/keytab` is the webkdc keytab (`service/webkdc@SLAC.STANFORD.EDU`)
 * `/etc/httpd/conf/http.keytab` is the HTTP keytab (`HTTP/webauth701.slac.stanford.edu@SLAC.STANFORD.EDU`)
- 
+
+## Apache Configurations
+
+* `/etc/httpd/conf/http.conf`: the main configuration
+* `/etc/httpd/conf.d/fcgid.conf`: FastCGI configuration
+* `/etc/httpd/conf.d/webkdc.conf`: WebKDC configuration
+* `/etc/httpd/conf.d/webauth.conf`: webauth configuration 
